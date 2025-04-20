@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý nhân viên</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fc;
+            padding: 30px;
+            color: #2d3748;
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-section .filter-label {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .filter-section .filter-label i {
+            margin-right: 8px;
+            color: #4a90e2;
+        }
+
+        .filter-section .filter-input {
+            width: 350px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filter-section .filter-input:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-links button, .nav-links a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #4a90e2;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links button:hover, .nav-links a:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+        }
+
+        .nav-links i {
+            font-size: 1.1rem;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            background-color: #f7fafc;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        tr {
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        /* Action Buttons Container */
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 6px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+        }
+
+        .action-btn:hover {
+            background-color: #edf2f7;
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .btn-edit i { color: #4a90e2; }
+        .btn-toggle i { color: #48bb78; }
+        .btn-assign i { color: #ecc94b; }
+
+        /* Status Styling */
+        td.status {
+            font-weight: 500;
+        }
+
+        td.status.active {
+            color: #48bb78;
+        }
+
+        td.status.inactive {
+            color: #f56565;
+        }
+
+        /* Sorting Links */
+        th a {
+            color: #2d3748;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        th a:hover {
+            color: #4a90e2;
+        }
+
+        .sort-icon::after {
+            content: '';
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: 6px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .sort-asc::after {
+            border-bottom: 5px solid #4a90e2;
+        }
+
+        .sort-desc::after {
+            border-top: 5px solid #4a90e2;
+        }
+
+        .sort-none::after {
+            border-bottom: 5px solid #a0aec0;
+        }
+
+        /* Flash Messages */
+        .flash-message {
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background-color: #4a90e2;
+            color: #ffffff;
+            border-bottom: none;
+            padding: 16px 24px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 24px;
+            background-color: #ffffff;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .error {
+            color: #f56565;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .btn-primary {
+            background-color: #4a90e2;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #a0aec0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #718096;
+            transform: translateY(-2px);
+        }
+
+        /* Confirm Modal Styling */
+        #confirmToggleModal .modal-header {
+            background-color: #48bb78;
+        }
+
+        #confirmToggleModal .modal-header.deactivate {
+            background-color: #f56565;
+        }
+
+        #confirmToggleModal .modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+        }
+
+        #confirmToggleModal .modal-body i {
+            font-size: 2.5rem;
+            color: #48bb78;
+        }
+
+        #confirmToggleModal .modal-body.deactivate i {
+            color: #f56565;
+        }
+
+        #confirmToggleModal .modal-body p {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        #confirmToggleModal .btn-confirm {
+            background-color: #48bb78;
+        }
+
+        #confirmToggleModal .btn-confirm:hover {
+            background-color: #38a169;
+        }
+
+        #confirmToggleModal .btn-confirm.deactivate {
+            background-color: #f56565;
+        }
+
+        #confirmToggleModal .btn-confirm.deactivate:hover {
+            background-color: #e53e3e;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 8px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            color: #4a5568;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #edf2f7;
+            color: #4a90e2;
+        }
+
+        .pagination .active {
+            background-color: #4a90e2;
+            color: #ffffff;
+            border-color: #4a90e2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .filter-section .filter-input {
+                width: 100%;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .nav-links button, .nav-links a {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .action-buttons {
+                gap: 6px;
+            }
+
+            .action-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .modal-body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Quản lý nhân viên</h1>
+<div class="filter-section">
+    <div class="filter-label">
+        <i class="bi bi-funnel"></i>
+        Bộ lọc
+    </div>
+    <div class="nav-links">
+        <button type="button" data-bs-toggle="modal" data-bs-target="#createStaffModal">
+            <i class="bi bi-person-plus"></i> Thêm nhân viên
+        </button>
+        <a th:href="@{/staff/import}">
+            <i class="bi bi-upload"></i> Import nhân viên
+        </a>
+        <a th:href="@{/staff/history}">
+            <i class="bi bi-clock-history"></i> Xem lịch sử import
+        </a>
+        <a th:href="@{/staff/template}" download>
+            <i class="bi bi-download"></i> Download template
+        </a>
+    </div>
+</div>
+<input type="text" class="filter-input" placeholder="Nhập tài khoản, tên, mã nhân viên (tìm kiếm email)">
+
+<!-- Flash Messages -->
+<div th:if="${message}" class="alert alert-success flash-message" role="alert">
+    <span th:text="${message}"></span>
+</div>
+<div th:if="${error}" class="alert alert-danger flash-message" role="alert">
+    <span th:text="${error}"></span>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>
+                <a th:href="@{/templates/staff(sortBy='staffCode',sortDir=${sortBy == 'staffCode' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                   th:classappend="${sortBy == 'staffCode' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
+                    Mã nhân viên
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/templates/staff(sortBy='name',sortDir=${sortBy == 'name' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                   th:classappend="${sortBy == 'name' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
+                    Tên nhân viên
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/templates/staff(sortBy='accountFpt',sortDir=${sortBy == 'accountFpt' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                   th:classappend="${sortBy == 'accountFpt' ? (sortDir == 'asc' ? 'sort-desc' : 'sort-asc') : 'sort-none'}">
+                    Email FPT
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/templates/staff(sortBy='accountFe',sortDir=${sortBy == 'accountFe' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                   th:classappend="${sortBy == 'accountFe' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
+                    Email FE
+                </a>
+            </th>
+            <th>
+                <a th:href="@{/templates/staff(sortBy='status',sortDir=${sortBy == 'status' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                   th:classappend="${sortBy == 'status' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
+                    Trạng thái
+                </a>
+            </th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="staff, iterStat : ${staffList}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${staff.staffCode}"></td>
+            <td th:text="${staff.name}"></td>
+            <td th:text="${staff.accountFpt}"></td>
+            <td th:text="${staff.accountFe}"></td>
+            <td th:classappend="${staff.status == 1} ? 'status active' : 'status inactive'"
+                th:text="${staff.status == 1 ? 'Đang hoạt động' : 'Ngừng hoạt động'}"></td>
+            <td>
+                <div class="action-buttons">
+                    <button type="button"
+                            class="action-btn btn-edit"
+                            data-bs-toggle="modal"
+                            data-bs-target="#updateStaffModal"
+                            th:data-staff-id="${staff.id}"
+                            th:data-staff-code="${staff.staffCode}"
+                            th:data-staff-name="${staff.name}"
+                            th:data-staff-account-fe="${staff.accountFe}"
+                            th:data-staff-account-fpt="${staff.accountFpt}"
+                            th:data-staff-status="${staff.status}">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <form th:action="@{/staff/toggle-status/{id}(id=${staff.id})}" method="post" style="display:inline;">
+                        <button type="button"
+                                class="action-btn btn-toggle"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmToggleModal"
+                                th:data-staff-id="${staff.id}"
+                                th:data-staff-status="${staff.status}"
+                                th:data-action="${staff.status == 1 ? 'deactivate' : 'activate'}"
+                                th:attr="title=${staff.status == 1 ? 'Ngừng' : 'Kích hoạt'}">
+                            <i class="bi bi-power"></i>
+                        </button>
+                    </form>
+                    <a th:href="@{/staff/assign-major/{id}(id=${staff.id})}"
+                       class="action-btn btn-assign"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="top"
+                       title="Gán bộ môn">
+                        <i class="bi bi-link-45deg"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+    <a href="#">Trước</a>
+    <span class="active">1</span>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <span>...</span>
+    <a href="#">Sau</a>
+    <span>5 bản ghi</span>
+</div>
+
+<!-- Create Staff Modal -->
+<div class="modal fade" id="createStaffModal" tabindex="-1" aria-labelledby="createStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createStaffModalLabel">Thêm nhân viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createStaffForm" th:action="@{/staff/create}" method="post">
+                    <div class="mb-3">
+                        <label for="createAccountFe" class="form-label">FE Account:</label>
+                        <input type="text" class="form-control" id="createAccountFe" name="accountFe" />
+                        <span class="error" id="createAccountFeError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createAccountFpt" class="form-label">FPT Account:</label>
+                        <input type="text" class="form-control" id="createAccountFpt" name="accountFpt" />
+                        <span class="error" id="createAccountFptError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createName" class="form-label">Tên:</label>
+                        <input type="text" class="form-control" id="createName" name="name" />
+                        <span class="error" id="createNameError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createStaffCode" class="form-label">Mã nhân viên:</label>
+                        <input type="text" class="form-control" id="createStaffCode" name="staffCode" />
+                        <span class="error" id="createStaffCodeError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createStatus" class="form-label">Trạng thái:</label>
+                        <select class="form-select" id="createStatus" name="status">
+                            <option value="1">Đang hoạt động</option>
+                            <option value="0">Ngừng hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-danger d-none" id="createFormError" role="alert"></div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Staff Modal -->
+<div class="modal fade" id="updateStaffModal" tabindex="-1" aria-labelledby="updateStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStaffModalLabel">Cập nhật nhân viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStaffForm" method="post">
+                    <input type="hidden" id="updateStaffId" name="id" />
+                    <div class="mb-3">
+                        <label for="updateAccountFe" class="form-label">FE Account:</label>
+                        <input type="text" class="form-control" id="updateAccountFe" name="accountFe" />
+                        <span class="error" id="updateAccountFeError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateAccountFpt" class="form-label">FPT Account:</label>
+                        <input type="text" class="form-control" id="updateAccountFpt" name="accountFpt" />
+                        <span class="error" id="updateAccountFptError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateName" class="form-label">Tên:</label>
+                        <input type="text" class="form-control" id="updateName" name="name" />
+                        <span class="error" id="updateNameError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateStaffCode" class="form-label">Mã nhân viên:</label>
+                        <input type="text" class="form-control" id="updateStaffCode" name="staffCode" />
+                        <span class="error" id="updateStaffCodeError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateStatus" class="form-label">Trạng thái:</label>
+                        <select class="form-select" id="updateStatus" name="status">
+                            <option value="1">Đang hoạt động</option>
+                            <option value="0">Ngừng hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-danger d-none" id="updateFormError" role="alert"></div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Toggle Status Modal -->
+<div class="modal fade" id="confirmToggleModal" tabindex="-1" aria-labelledby="confirmToggleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmToggleModalLabel">Xác nhận thay đổi trạng thái</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <i class="bi bi-exclamation-circle"></i>
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-confirm" id="confirmToggleButton">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="/js/staffManager.js"></script>
+</body>
+<!-- Toast Container -->
+<div class="position-fixed top-0 start-0 p-3" style="z-index: 1050;">
+    <div id="toggleToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Xác nhận</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <p id="toastMessage">Bạn có chắc muốn thay đổi trạng thái nhân viên này?</p>
+            <div class="d-flex justify-content-end gap-2 mt-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">Hủy</button>
+                <button type="button" class="btn btn-success btn-sm" id="confirmToastButton">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Lịch sử import</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<h1>Lịch sử import</h1>
+<a th:href="@{/staff}">Quay lại</a>
+
+<table>
+  <tr>
+    <th>Thời gian</th>
+    <th>Tên file</th>
+    <th>Trạng thái</th>
+
+  </tr>
+  <tr th:each="history : ${historyList}">
+    <td th:text="${#dates.format(new java.util.Date(history.importDate), 'dd/MM/yyyy HH:mm:ss')}"></td>
+    <td th:text="${history.fileName}"></td>
+    <td th:text="${history.status}"></td>
+
+  </tr>
+</table>
+</body>
+</html>
