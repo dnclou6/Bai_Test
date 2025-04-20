@@ -5,10 +5,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface DepartmentFacilityRepository extends JpaRepository<DepartmentFacility, UUID> {
     @Query("SELECT df FROM DepartmentFacility df WHERE df.facilityId = :facilityId")
     List<DepartmentFacility> findByFacilityId(UUID facilityId);
+
+    Optional<DepartmentFacility> findByFacilityIdAndDepartmentName(UUID facilityId, String departmentName);
 }

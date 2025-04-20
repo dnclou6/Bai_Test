@@ -71,19 +71,19 @@ public class StaffService {
         }
 
         if (staffRepository.existsByAccountFe(staffDTO.getAccountFe())) {
-            throw new IllegalArgumentException("FE account already exists");
+            throw new IllegalArgumentException("Tài khoản FE đã tồn tại");
         }
         if (staffRepository.existsByAccountFpt(staffDTO.getAccountFpt())) {
-            throw new IllegalArgumentException("FPT account already exists");
+            throw new IllegalArgumentException("Tài khoản FPT đã tồn tại");
         }
         if (staffRepository.existsByStaffCode(staffDTO.getStaffCode())) {
-            throw new IllegalArgumentException("Staff code already exists");
+            throw new IllegalArgumentException("Mã nhân viên đã tồn tại");
         }
 
 
         if (!staffDTO.getAccountFe().contains(staffDTO.getStaffCode()) ||
                 !staffDTO.getAccountFpt().contains(staffDTO.getStaffCode())) {
-            throw new IllegalArgumentException("Emails must contain staff code");
+            throw new IllegalArgumentException("Email phải chứa mã nhân viên");
         }
 
         // Map DTO to Entity
@@ -103,7 +103,7 @@ public class StaffService {
     @Transactional
     public Staff updateStaff(UUID staffId, StaffDTO staffDTO) {
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new IllegalArgumentException("Staff not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên"));
 
         var violations = validator.validate(staffDTO);
         if (!violations.isEmpty()) {
@@ -112,20 +112,20 @@ public class StaffService {
 
         if (!staff.getAccountFe().equals(staffDTO.getAccountFe()) &&
                 staffRepository.existsByAccountFe(staffDTO.getAccountFe())) {
-            throw new IllegalArgumentException("FE account already exists");
+            throw new IllegalArgumentException("Tài khoản FE đã tồn tại");
         }
         if (!staff.getAccountFpt().equals(staffDTO.getAccountFpt()) &&
                 staffRepository.existsByAccountFpt(staffDTO.getAccountFpt())) {
-            throw new IllegalArgumentException("FPT account already exists");
+            throw new IllegalArgumentException("Tài khoản FPT đã tồn tại");
         }
         if (!staff.getStaffCode().equals(staffDTO.getStaffCode()) &&
                 staffRepository.existsByStaffCode(staffDTO.getStaffCode())) {
-            throw new IllegalArgumentException("Staff code already exists");
+            throw new IllegalArgumentException("Mã nhân viên đã tồn tại");
         }
 
         if (!staffDTO.getAccountFe().contains(staffDTO.getStaffCode()) ||
                 !staffDTO.getAccountFpt().contains(staffDTO.getStaffCode())) {
-            throw new IllegalArgumentException("Emails must contain staff code");
+            throw new IllegalArgumentException("Email phải chứa mã nhân viên");
         }
 
         staff.setStatus(staffDTO.getStatus());
@@ -149,14 +149,14 @@ public class StaffService {
     @Transactional
     public void assignMajorFacility(UUID staffId, UUID majorFacilityId) {
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new IllegalArgumentException("Staff not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên"));
         MajorFacility majorFacility = majorFacilityRepository.findById(majorFacilityId)
-                .orElseThrow(() -> new IllegalArgumentException("Major facility not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chuyên ngành"));
 
         // Check if staff already has a major in this facility
         UUID facilityId = majorFacility.getDepartmentFacility().getFacilityId();
         if (staffMajorFacilityRepository.findByStaffIdAndFacilityId(staffId, facilityId).isPresent()) {
-            throw new IllegalArgumentException("Staff already assigned to a major in this facility");
+            throw new IllegalArgumentException("Nhân viên đã được phân công vào một chuyên ngành trong cơ sở này");
         }
 
         StaffMajorFacility smf = new StaffMajorFacility();
@@ -194,57 +194,118 @@ public class StaffService {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // Skip header
+                if (row.getRowNum() == 0) continue; // Bỏ qua header
                 ImportDTO result = new ImportDTO();
                 result.setRowNumber(row.getRowNum() + 1);
                 try {
+                    // Đọc dữ liệu từ file Excel
                     StaffDTO staffDTO = new StaffDTO();
-                    staffDTO.setAccountFe(row.getCell(0).getStringCellValue());
-                    staffDTO.setAccountFpt(row.getCell(1).getStringCellValue());
-                    staffDTO.setName(row.getCell(2).getStringCellValue());
-                    staffDTO.setStaffCode(row.getCell(3).getStringCellValue());
+                    staffDTO.setAccountFe(getCellValueAsString(row.getCell(0)));
+                    staffDTO.setAccountFpt(getCellValueAsString(row.getCell(1)));
+                    staffDTO.setName(getCellValueAsString(row.getCell(2)));
+                    staffDTO.setStaffCode(getCellValueAsString(row.getCell(3)));
+                    staffDTO.setFacility(getCellValueAsString(row.getCell(4)));
+                    staffDTO.setDepartment(getCellValueAsString(row.getCell(5)));
+                    staffDTO.setMajor(getCellValueAsString(row.getCell(6)));
                     staffDTO.setStatus((byte) 1);
 
-                    createStaff(staffDTO);
+                    // Tạo nhân viên
+                    Staff staff = createStaff(staffDTO);
+
+                    // Xử lý Facility, Department, và Major nếu có
+                    if (staffDTO.getFacility() != null && !staffDTO.getFacility().isEmpty() &&
+                            staffDTO.getDepartment() != null && !staffDTO.getDepartment().isEmpty() &&
+                            staffDTO.getMajor() != null && !staffDTO.getMajor().isEmpty()) {
+
+                        // Tìm Facility
+                        Facility facility = facilityRepository.findByName(staffDTO.getFacility())
+                                .orElseThrow(() -> new IllegalArgumentException("Cơ sở không tồn tại: " + staffDTO.getFacility()));
+
+                        // Tìm DepartmentFacility
+                        DepartmentFacility departmentFacility = departmentFacilityRepository
+                                .findByFacilityIdAndDepartmentName(facility.getId(), staffDTO.getDepartment())
+                                .orElseThrow(() -> new IllegalArgumentException("Bộ môn không tồn tại: " + staffDTO.getDepartment() + " tại cơ sở " + staffDTO.getFacility()));
+
+                        // Tìm MajorFacility
+                        MajorFacility majorFacility = majorFacilityRepository
+                                .findByDepartmentFacilityIdAndMajorName(departmentFacility.getId(), staffDTO.getMajor())
+                                .orElseThrow(() -> new IllegalArgumentException("Chuyên ngành không tồn tại: " + staffDTO.getMajor() + " trong bộ môn " + staffDTO.getDepartment()));
+
+                        // Gán chuyên ngành cho nhân viên
+                        assignMajorFacility(staff.getId(), majorFacility.getId());
+                    }
+
                     result.setSuccess(true);
-                    result.setMessage("Imported successfully");
+                    result.setMessage("Import thành công: " + staffDTO.getStaffCode());
                 } catch (Exception e) {
                     result.setSuccess(false);
-                    result.setMessage(e.getMessage());
+                    result.setMessage("Lỗi tại dòng " + result.getRowNumber() + ": " + e.getMessage());
                 }
                 results.add(result);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to process file", e);
+            throw new RuntimeException("Không thể xử lý file Excel: " + e.getMessage(), e);
         }
 
-        // Save import history
+        // Lưu lịch sử import
         ImportHistory history = new ImportHistory();
         history.setId(UUID.randomUUID());
         history.setImportDate(System.currentTimeMillis());
         history.setFileName(file.getOriginalFilename());
-        history.setStatus(results.stream().allMatch(ImportDTO::isSuccess) ? "SUCCESS" : "PARTIAL");
+        history.setStatus(results.stream().allMatch(ImportDTO::isSuccess) ? "SUCCESS" : "FAIL");
         history.setDetails(results.toString());
         importHistoryRepository.save(history);
 
         return results;
     }
 
+    // Hàm hỗ trợ để lấy giá trị ô dưới dạng String
+    private String getCellValueAsString(org.apache.poi.ss.usermodel.Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                return String.valueOf((int) cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            default:
+                return "";
+        }
+    }
+
     public byte[] downloadTemplate() throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Staff Template");
+
+            // Tạo header
             Row header = sheet.createRow(0);
             header.createCell(0).setCellValue("Account FE");
             header.createCell(1).setCellValue("Account FPT");
             header.createCell(2).setCellValue("Name");
             header.createCell(3).setCellValue("Staff Code");
+            header.createCell(4).setCellValue("Facility Name");
+            header.createCell(5).setCellValue("Department Name");
+            header.createCell(6).setCellValue("Major Name");
 
-            // Thêm dữ liệu mẫu
+            // Tạo dữ liệu mẫu
             Row row1 = sheet.createRow(1);
             row1.createCell(0).setCellValue("STAFF001@fe.edu.vn");
             row1.createCell(1).setCellValue("STAFF001@fpt.edu.vn");
             row1.createCell(2).setCellValue("Nguyen Van A");
             row1.createCell(3).setCellValue("STAFF001");
+            row1.createCell(4).setCellValue("HN");
+            row1.createCell(5).setCellValue("Department 1");
+            row1.createCell(6).setCellValue("Major One");
+
+            // Tùy chỉnh kích thước cột (tùy chọn)
+            for (int i = 0; i <= 6; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Xuất workbook thành mảng byte
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
             return out.toByteArray();
