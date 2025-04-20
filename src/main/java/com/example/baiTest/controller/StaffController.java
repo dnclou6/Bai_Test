@@ -36,13 +36,16 @@ public class StaffController {
     private final StaffService staffService;
 
     @GetMapping
-    public String listStaff(Model model,
-                            @RequestParam(defaultValue = "staffCode") String sortBy,
-                            @RequestParam(defaultValue = "asc") String sortDir) {
-        model.addAttribute("staffList", staffService.getAllStaff(sortBy, sortDir));
+    public String listStaff(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir,
+            Model model) {
+        List<Staff> staffList = staffService.getFilteredStaff(search, status, sortBy, sortDir);
+        model.addAttribute("staffList", staffList);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("sortDir", sortDir);
-        model.addAttribute("staffDTO", new StaffDTO()); // For create modal form
         return "staff/list";
     }
 

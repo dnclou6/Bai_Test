@@ -5,12 +5,14 @@ import com.example.baiTest.entity.*;
 import com.example.baiTest.repository.*;
 import com.example.baiTest.dto.ImportDTO;
 import com.example.baiTest.dto.StaffDTO;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Validator;
@@ -247,5 +249,36 @@ public class StaffService {
             workbook.write(out);
             return out.toByteArray();
         }
+    }
+
+    public List<Staff> getFilteredStaff(String search, String status, String sortBy, String sortDir) {
+        // Xây dựng Specification để lọc
+        Specification<Staff> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Lọc theo từ khóa tìm kiếm
+            if (search != null && !search.trim().isEmpty()) {
+                String searchPattern = "%" + search.toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("staffCode")), searchPattern),
+                        cb.like(cb.lower(root.get("name")), searchPattern),
+                        cb.like(cb.lower(root.get("accountFe")), searchPattern),
+                        cb.like(cb.lower(root.get("accountFpt")), searchPattern)
+                ));
+            }
+
+            // Lọc theo trạng thái
+            if (status != null && !status.trim().isEmpty()) {
+                predicates.add(cb.equal(root.get("status"), Integer.parseInt(status)));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // Sắp xếp kết quả
+        Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+        // Truy vấn dữ liệu với Specification và Sort
+        return staffRepository.findAll(spec, sort);
     }
 }

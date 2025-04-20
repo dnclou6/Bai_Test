@@ -30,19 +30,24 @@
             margin-bottom: 20px;
             font-size: 2rem;
             font-weight: 600;
-            text-align: center;
+            text-align: left;
         }
 
         /* Filter Section */
         .filter-section {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
             margin-bottom: 20px;
             background-color: #ffffff;
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .filter-section:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
         .filter-section .filter-label {
@@ -59,15 +64,38 @@
         }
 
         .filter-section .filter-input {
-            width: 350px;
-            padding: 10px;
+            flex: 1;
+            padding: 10px 15px;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             font-size: 0.95rem;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #f9fafb;
         }
 
         .filter-section .filter-input:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .filter-section .filter-input::placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .filter-section .filter-status {
+            width: 200px;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #f9fafb;
+            color: #4a5568;
+        }
+
+        .filter-section .filter-status:focus {
             border-color: #4a90e2;
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
             outline: none;
@@ -77,6 +105,8 @@
         .nav-links {
             display: flex;
             gap: 12px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
         }
 
         .nav-links button, .nav-links a {
@@ -85,18 +115,20 @@
             background-color: #4a90e2;
             padding: 10px 16px;
             border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             border: none;
             font-size: 0.95rem;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .nav-links button:hover, .nav-links a:hover {
             background-color: #357abd;
             transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .nav-links i {
@@ -107,8 +139,13 @@
         .table-container {
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .table-container:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
         table {
@@ -227,12 +264,38 @@
             border-bottom: 5px solid #a0aec0;
         }
 
-        /* Flash Messages */
-        .flash-message {
-            margin: 20px auto;
-            max-width: 800px;
+        /* Toast Container for Flash Messages */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1050;
+        }
+
+        .toast {
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background-color: #ffffff;
+        }
+
+        .toast-header {
+            font-weight: 500;
+            border-bottom: none;
+        }
+
+        .toast-header.bg-success {
+            background-color: #48bb78 !important;
+            color: #ffffff;
+        }
+
+        .toast-header.bg-danger {
+            background-color: #f56565 !important;
+            color: #ffffff;
+        }
+
+        .toast-body {
+            font-size: 0.95rem;
+            color: #2d3748;
         }
 
         /* Modal Styling */
@@ -313,6 +376,21 @@
             transform: translateY(-2px);
         }
 
+        .toast {
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* Confirm Modal Styling */
         #confirmToggleModal .modal-header {
             background-color: #48bb78;
@@ -376,18 +454,20 @@
             font-size: 0.95rem;
             text-decoration: none;
             color: #4a5568;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .pagination a:hover {
             background-color: #edf2f7;
             color: #4a90e2;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .pagination .active {
             background-color: #4a90e2;
             color: #ffffff;
             border-color: #4a90e2;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Responsive Design */
@@ -406,7 +486,8 @@
                 align-items: stretch;
             }
 
-            .filter-section .filter-input {
+            .filter-section .filter-input,
+            .filter-section .filter-status {
                 width: 100%;
             }
 
@@ -441,35 +522,58 @@
     </style>
 </head>
 <body>
-<h1>Quản lý nhân viên</h1>
+<h1>Danh sách nhân viên</h1>
 <div class="filter-section">
     <div class="filter-label">
         <i class="bi bi-funnel"></i>
         Bộ lọc
     </div>
-    <div class="nav-links">
-        <button type="button" data-bs-toggle="modal" data-bs-target="#createStaffModal">
-            <i class="bi bi-person-plus"></i> Thêm nhân viên
-        </button>
-        <a th:href="@{/staff/import}">
-            <i class="bi bi-upload"></i> Import nhân viên
-        </a>
-        <a th:href="@{/staff/history}">
-            <i class="bi bi-clock-history"></i> Xem lịch sử import
-        </a>
-        <a th:href="@{/staff/template}" download>
-            <i class="bi bi-download"></i> Download template
-        </a>
-    </div>
+    <form id="filterForm" th:action="@{/staff}" method="get" class="d-flex align-items-center gap-3 w-100">
+        <input type="text" class="filter-input" id="search" name="search" placeholder="Tìm kiếm"
+               th:value="${param.search}">
+        <select class="filter-status" id="status" name="status">
+            <option value="" th:selected="${param.status == null}">Chọn trạng thái</option>
+            <option value="1" th:selected="${param.status == '1'}">Đang hoạt động</option>
+            <option value="0" th:selected="${param.status == '0'}">Ngừng hoạt động</option>
+        </select>
+    </form>
 </div>
-<input type="text" class="filter-input" placeholder="Nhập tài khoản, tên, mã nhân viên (tìm kiếm email)">
+<!-- Navigation Links -->
+<div class="nav-links">
+    <button type="button" data-bs-toggle="modal" data-bs-target="#createStaffModal">
+        <i class="bi bi-person-plus"></i> Thêm nhân viên
+    </button>
+    <a th:href="@{/staff/import}">
+        <i class="bi bi-upload"></i> Import nhân viên
+    </a>
+    <a th:href="@{/staff/template}" download>
+        <i class="bi bi-download"></i> Download template
+    </a>
+    <a th:href="@{/staff/history}">
+        <i class="bi bi-clock-history"></i> Xem lịch sử import
+    </a>
+</div>
 
-<!-- Flash Messages -->
-<div th:if="${message}" class="alert alert-success flash-message" role="alert">
-    <span th:text="${message}"></span>
-</div>
-<div th:if="${error}" class="alert alert-danger flash-message" role="alert">
-    <span th:text="${error}"></span>
+<!-- Toast Container for Flash Messages -->
+<div class="toast-container">
+    <div th:if="${message}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success">
+            <strong class="me-auto">Thông báo</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <span th:text="${message}"></span>
+        </div>
+    </div>
+    <div th:if="${error}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger">
+            <strong class="me-auto">Lỗi</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <span th:text="${error}"></span>
+        </div>
+    </div>
 </div>
 
 <div class="table-container">
@@ -478,31 +582,31 @@
         <tr>
             <th>STT</th>
             <th>
-                <a th:href="@{/templates/staff(sortBy='staffCode',sortDir=${sortBy == 'staffCode' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                <a th:href="@{/staff(sortBy='staffCode',sortDir=${sortBy == 'staffCode' and sortDir == 'asc' ? 'desc' : 'asc'}, search=${param.search}, status=${param.status})}"
                    th:classappend="${sortBy == 'staffCode' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
                     Mã nhân viên
                 </a>
             </th>
             <th>
-                <a th:href="@{/templates/staff(sortBy='name',sortDir=${sortBy == 'name' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                <a th:href="@{/staff(sortBy='name',sortDir=${sortBy == 'name' and sortDir == 'asc' ? 'desc' : 'asc'}, search=${param.search}, status=${param.status})}"
                    th:classappend="${sortBy == 'name' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
                     Tên nhân viên
                 </a>
             </th>
             <th>
-                <a th:href="@{/templates/staff(sortBy='accountFpt',sortDir=${sortBy == 'accountFpt' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                <a th:href="@{/staff(sortBy='accountFpt',sortDir=${sortBy == 'accountFpt' and sortDir == 'asc' ? 'desc' : 'asc'}, search=${param.search}, status=${param.status})}"
                    th:classappend="${sortBy == 'accountFpt' ? (sortDir == 'asc' ? 'sort-desc' : 'sort-asc') : 'sort-none'}">
                     Email FPT
                 </a>
             </th>
             <th>
-                <a th:href="@{/templates/staff(sortBy='accountFe',sortDir=${sortBy == 'accountFe' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                <a th:href="@{/staff(sortBy='accountFe',sortDir=${sortBy == 'accountFe' and sortDir == 'asc' ? 'desc' : 'asc'}, search=${param.search}, status=${param.status})}"
                    th:classappend="${sortBy == 'accountFe' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
                     Email FE
                 </a>
             </th>
             <th>
-                <a th:href="@{/templates/staff(sortBy='status',sortDir=${sortBy == 'status' and sortDir == 'asc' ? 'desc' : 'asc'})}"
+                <a th:href="@{/staff(sortBy='status',sortDir=${sortBy == 'status' and sortDir == 'asc' ? 'desc' : 'asc'}, search=${param.search}, status=${param.status})}"
                    th:classappend="${sortBy == 'status' ? (sortDir == 'asc' ? 'sort-asc' : 'sort-desc') : 'sort-none'}">
                     Trạng thái
                 </a>
@@ -558,6 +662,8 @@
         </tbody>
     </table>
 </div>
+
+
 
 <!-- Pagination -->
 <div class="pagination">
@@ -689,22 +795,271 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="/js/staffManager.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Khởi tạo tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Hiển thị các toast ban đầu (nếu có)
+        var toastElements = document.querySelectorAll('.toast');
+        toastElements.forEach(function(toastEl) {
+            var toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 5000
+            });
+            toast.show();
+        });
+
+        // Xử lý modal cập nhật nhân viên
+        var updateModal = document.getElementById('updateStaffModal');
+        if (updateModal) {
+            updateModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var staffId = button.getAttribute('data-staff-id');
+                var staffCode = button.getAttribute('data-staff-code');
+                var staffName = button.getAttribute('data-staff-name');
+                var accountFe = button.getAttribute('data-staff-account-fe');
+                var accountFpt = button.getAttribute('data-staff-account-fpt');
+                var status = button.getAttribute('data-staff-status');
+
+                // Cập nhật action của form
+                var form = document.getElementById('updateStaffForm');
+                form.action = '/staff/update/' + staffId;
+
+                // Điền giá trị vào form
+                document.getElementById('updateStaffId').value = staffId;
+                document.getElementById('updateStaffCode').value = staffCode;
+                document.getElementById('updateName').value = staffName;
+                document.getElementById('updateAccountFe').value = accountFe;
+                document.getElementById('updateAccountFpt').value = accountFpt;
+                document.getElementById('updateStatus').value = status;
+            });
+        }
+
+        // Xử lý form tạo nhân viên
+        const createForm = document.getElementById('createStaffForm');
+        if (createForm) {
+            createForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitFormWithAjax(createForm, 'create');
+            });
+        }
+
+        // Xử lý form cập nhật nhân viên
+        const updateForm = document.getElementById('updateStaffForm');
+        if (updateForm) {
+            updateForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitFormWithAjax(updateForm, 'update');
+            });
+        }
+
+        // Hàm gửi form qua AJAX
+        function submitFormWithAjax(form, formType) {
+            const formData = new FormData(form);
+            const formErrorElement = document.getElementById(formType + 'FormError');
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Đóng modal
+                        var modal = bootstrap.Modal.getInstance(document.getElementById(formType + 'StaffModal'));
+                        modal.hide();
+
+                        // Hiển thị thông báo thành công dưới dạng toast
+                        const toastContainer = document.querySelector('.toast-container');
+                        const toastDiv = document.createElement('div');
+                        toastDiv.className = 'toast';
+                        toastDiv.role = 'alert';
+                        toastDiv.setAttribute('aria-live', 'assertive');
+                        toastDiv.setAttribute('aria-atomic', 'true');
+                        toastDiv.innerHTML = `
+                        <div class="toast-header bg-success">
+                            <strong class="me-auto">Thông báo</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">${data.message}</div>
+                    `;
+                        toastContainer.appendChild(toastDiv);
+
+                        // Hiển thị toast và tự động ẩn sau 5 giây
+                        const toast = new bootstrap.Toast(toastDiv, {
+                            autohide: true,
+                            delay: 5000
+                        });
+                        toast.show();
+
+                        // Làm mới trang sau một khoảng thời gian ngắn
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        // Hiển thị lỗi xác thực
+                        if (data.fieldErrors) {
+                            for (const [field, errors] of Object.entries(data.fieldErrors)) {
+                                const errorElement = document.getElementById(formType + field.charAt(0).toUpperCase() + field.slice(1) + 'Error');
+                                if (errorElement) {
+                                    errorElement.textContent = errors.join(', ');
+                                }
+                            }
+                        }
+
+                        // Hiển thị lỗi chung nếu có
+                        if (data.message) {
+                            formErrorElement.textContent = data.message;
+                            formErrorElement.classList.remove('d-none');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    formErrorElement.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                    formErrorElement.classList.remove('d-none');
+                });
+        }
+
+        // Xử lý modal xác nhận đổi trạng thái
+        const confirmModal = document.getElementById('confirmToggleModal');
+        const confirmButton = document.getElementById('confirmToggleButton');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const modalBody = confirmModal.querySelector('.modal-body');
+        const modalHeader = confirmModal.querySelector('.modal-header');
+        const confirmBtn = confirmModal.querySelector('.btn-confirm');
+        let toggleForm = null;
+
+        // Xử lý khi nút toggle được nhấn
+        document.querySelectorAll('.btn-toggle').forEach(button => {
+            button.addEventListener('click', function () {
+                const staffId = this.getAttribute('data-staff-id');
+                const action = this.getAttribute('data-action');
+                toggleForm = this.closest('form');
+
+                // Cập nhật nội dung modal dựa trên hành động
+                if (action === 'deactivate') {
+                    confirmMessage.textContent = 'Bạn có chắc muốn ngừng hoạt động nhân viên này?';
+                    modalBody.classList.add('deactivate');
+                    modalHeader.classList.add('deactivate');
+                    confirmBtn.classList.add('deactivate');
+                } else {
+                    confirmMessage.textContent = 'Bạn có chắc muốn kích hoạt nhân viên này?';
+                    modalBody.classList.remove('deactivate');
+                    modalHeader.classList.remove('deactivate');
+                    confirmBtn.classList.remove('deactivate');
+                }
+            });
+        });
+
+        // Xử lý khi nhấn nút xác nhận
+        confirmButton.addEventListener('click', function () {
+            if (toggleForm) {
+                const staffId = toggleForm.querySelector('.btn-toggle').getAttribute('data-staff-id');
+                fetch(`/staff/api/toggle-status/${staffId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const modal = bootstrap.Modal.getInstance(confirmModal);
+                        modal.hide();
+
+                        // Hiển thị thông báo dưới dạng toast
+                        const toastContainer = document.querySelector('.toast-container');
+                        const toastDiv = document.createElement('div');
+                        toastDiv.className = 'toast';
+                        toastDiv.role = 'alert';
+                        toastDiv.setAttribute('aria-live', 'assertive');
+                        toastDiv.setAttribute('aria-atomic', 'true');
+                        toastDiv.innerHTML = `
+                        <div class="toast-header ${data.success ? 'bg-success' : 'bg-danger'}">
+                            <strong class="me-auto">${data.success ? 'Thông báo' : 'Lỗi'}</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">${data.message}</div>
+                    `;
+                        toastContainer.appendChild(toastDiv);
+
+                        // Hiển thị toast và tự động ẩn sau 5 giây
+                        const toast = new bootstrap.Toast(toastDiv, {
+                            autohide: true,
+                            delay: 5000
+                        });
+                        toast.show();
+
+                        if (data.success) {
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const modal = bootstrap.Modal.getInstance(confirmModal);
+                        modal.hide();
+
+                        // Hiển thị thông báo lỗi dưới dạng toast
+                        const toastContainer = document.querySelector('.toast-container');
+                        const toastDiv = document.createElement('div');
+                        toastDiv.className = 'toast';
+                        toastDiv.role = 'alert';
+                        toastDiv.setAttribute('aria-live', 'assertive');
+                        toastDiv.setAttribute('aria-atomic', 'true');
+                        toastDiv.innerHTML = `
+                        <div class="toast-header bg-danger">
+                            <strong class="me-auto">Lỗi</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">Có lỗi xảy ra. Vui lòng thử lại sau.</div>
+                    `;
+                        toastContainer.appendChild(toastDiv);
+
+                        const toast = new bootstrap.Toast(toastDiv, {
+                            autohide: true,
+                            delay: 5000
+                        });
+                        toast.show();
+                    });
+            }
+        });
+
+        // Đặt lại trạng thái modal khi đóng
+        confirmModal.addEventListener('hidden.bs.modal', function () {
+            modalBody.classList.remove('deactivate');
+            modalHeader.classList.remove('deactivate');
+            confirmBtn.classList.remove('deactivate');
+            toggleForm = null;
+        });
+
+        // Xử lý bộ lọc: tự động gửi form khi thay đổi ô tìm kiếm hoặc trạng thái
+        const filterForm = document.getElementById('filterForm');
+        const searchInput = document.getElementById('search');
+        const statusSelect = document.getElementById('status');
+
+        // Gửi form khi thay đổi ô tìm kiếm (sau 500ms kể từ lần gõ cuối)
+        let searchTimeout;
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterForm.submit();
+            }, 500);
+        });
+
+        // Gửi form ngay khi thay đổi trạng thái
+        statusSelect.addEventListener('change', function () {
+            filterForm.submit();
+        });
+    });
+</script>
 </body>
-<!-- Toast Container -->
-<div class="position-fixed top-0 start-0 p-3" style="z-index: 1050;">
-    <div id="toggleToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-        <div class="toast-header bg-success text-white">
-            <strong class="me-auto">Xác nhận</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-            <p id="toastMessage">Bạn có chắc muốn thay đổi trạng thái nhân viên này?</p>
-            <div class="d-flex justify-content-end gap-2 mt-2">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">Hủy</button>
-                <button type="button" class="btn btn-success btn-sm" id="confirmToastButton">Xác nhận</button>
-            </div>
-        </div>
-    </div>
-</div>
 </html>

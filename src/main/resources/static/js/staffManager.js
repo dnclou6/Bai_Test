@@ -68,12 +68,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     var modal = bootstrap.Modal.getInstance(document.getElementById(formType + 'StaffModal'));
                     modal.hide();
 
-                    // Hiển thị thông báo thành công và làm mới trang
-                    const flashMessage = document.createElement('div');
-                    flashMessage.className = 'alert alert-success flash-message';
-                    flashMessage.role = 'alert';
-                    flashMessage.textContent = data.message;
-                    document.body.insertBefore(flashMessage, document.querySelector('.table-container'));
+                    // Tạo toast mới để hiển thị thông báo thành công
+                    const flashToast = document.createElement('div');
+                    flashToast.className = 'toast';
+                    flashToast.role = 'alert';
+                    flashToast.setAttribute('aria-live', 'assertive');
+                    flashToast.setAttribute('aria-atomic', 'true');
+                    flashToast.setAttribute('data-bs-autohide', 'true');
+                    flashToast.setAttribute('data-bs-delay', '3000');
+
+                    const flashToastHeader = document.createElement('div');
+                    flashToastHeader.className = 'toast-header bg-success text-white';
+                    flashToastHeader.innerHTML = `
+                    <strong class="me-auto">Thông báo</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                `;
+
+                    const flashToastBody = document.createElement('div');
+                    flashToastBody.className = 'toast-body';
+                    flashToastBody.textContent = data.message;
+
+                    flashToast.appendChild(flashToastHeader);
+                    flashToast.appendChild(flashToastBody);
+
+                    // Thêm toast vào container
+                    document.querySelector('.position-fixed.top-0.start-0').appendChild(flashToast);
+
+                    // Hiển thị toast
+                    const bsFlashToast = new bootstrap.Toast(flashToast);
+                    bsFlashToast.show();
 
                     // Làm mới trang sau một khoảng thời gian ngắn
                     setTimeout(() => {
@@ -104,42 +127,41 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Xử lý modal xác nhận đổi trạng thái
-    const confirmModal = document.getElementById('confirmToggleModal');
-    const confirmButton = document.getElementById('confirmToggleButton');
-    const confirmMessage = document.getElementById('confirmMessage');
-    const modalBody = confirmModal.querySelector('.modal-body');
-    const modalHeader = confirmModal.querySelector('.modal-header');
-    const confirmBtn = confirmModal.querySelector('.btn-confirm');
-    let toggleForm = null;
+    // Xử lý toast xác nhận đổi trạng thái
+    const toggleToast = document.getElementById('toggleToast');
+    const confirmToastButton = document.getElementById('confirmToastButton');
+    const toastMessage = document.getElementById('toastMessage');
+    let currentStaffId = null;
+    let currentAction = null;
 
-    // Xử lý khi nút toggle được nhấn
     document.querySelectorAll('.btn-toggle').forEach(button => {
         button.addEventListener('click', function () {
-            const staffId = this.getAttribute('data-staff-id');
-            const action = this.getAttribute('data-action');
-            toggleForm = this.closest('form');
+            currentStaffId = this.getAttribute('data-staff-id');
+            currentAction = this.getAttribute('data-action');
 
-            // Cập nhật nội dung modal dựa trên hành động
-            if (action === 'deactivate') {
-                confirmMessage.textContent = 'Bạn có chắc muốn ngừng hoạt động nhân viên này?';
-                modalBody.classList.add('deactivate');
-                modalHeader.classList.add('deactivate');
+            // Cập nhật nội dung toast dựa trên hành động
+            const toastHeader = toggleToast.querySelector('.toast-header');
+            const confirmBtn = toggleToast.querySelector('#confirmToastButton');
+            if (currentAction === 'deactivate') {
+                toastMessage.textContent = 'Bạn có chắc muốn ngừng hoạt động nhân viên này?';
+                toastHeader.classList.add('deactivate');
                 confirmBtn.classList.add('deactivate');
             } else {
-                confirmMessage.textContent = 'Bạn có chắc muốn kích hoạt nhân viên này?';
-                modalBody.classList.remove('deactivate');
-                modalHeader.classList.remove('deactivate');
+                toastMessage.textContent = 'Bạn có chắc muốn kích hoạt nhân viên này?';
+                toastHeader.classList.remove('deactivate');
                 confirmBtn.classList.remove('deactivate');
             }
+
+            // Hiển thị toast
+            const bsToast = new bootstrap.Toast(toggleToast, { autohide: false });
+            bsToast.show();
         });
     });
 
-    // Xử lý khi nhấn nút xác nhận
-    confirmButton.addEventListener('click', function () {
-        if (toggleForm) {
-            const staffId = toggleForm.querySelector('.btn-toggle').getAttribute('data-staff-id');
-            fetch(`/staff/api/toggle-status/${staffId}`, {
+    // Xử lý khi nhấn nút xác nhận trong toast
+    confirmToastButton.addEventListener('click', function () {
+        if (currentStaffId) {
+            fetch(`/staff/api/toggle-status/${currentStaffId}`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -147,14 +169,38 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(response => response.json())
                 .then(data => {
-                    const modal = bootstrap.Modal.getInstance(confirmModal);
-                    modal.hide();
+                    const bsToast = bootstrap.Toast.getInstance(toggleToast);
+                    bsToast.hide();
 
-                    const flashMessage = document.createElement('div');
-                    flashMessage.className = `alert ${data.success ? 'alert-success' : 'alert-danger'} flash-message`;
-                    flashMessage.role = 'alert';
-                    flashMessage.textContent = data.message;
-                    document.body.insertBefore(flashMessage, document.querySelector('.table-container'));
+                    // Tạo toast mới để hiển thị thông báo thành công hoặc lỗi
+                    const flashToast = document.createElement('div');
+                    flashToast.className = 'toast';
+                    flashToast.role = 'alert';
+                    flashToast.setAttribute('aria-live', 'assertive');
+                    flashToast.setAttribute('aria-atomic', 'true');
+                    flashToast.setAttribute('data-bs-autohide', 'true');
+                    flashToast.setAttribute('data-bs-delay', '3000');
+
+                    const flashToastHeader = document.createElement('div');
+                    flashToastHeader.className = `toast-header ${data.success ? 'bg-success' : 'bg-danger'} text-white`;
+                    flashToastHeader.innerHTML = `
+                    <strong class="me-auto">Thông báo</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                `;
+
+                    const flashToastBody = document.createElement('div');
+                    flashToastBody.className = 'toast-body';
+                    flashToastBody.textContent = data.message;
+
+                    flashToast.appendChild(flashToastHeader);
+                    flashToast.appendChild(flashToastBody);
+
+                    // Thêm toast vào container
+                    document.querySelector('.position-fixed.top-0.start-0').appendChild(flashToast);
+
+                    // Hiển thị toast
+                    const bsFlashToast = new bootstrap.Toast(flashToast);
+                    bsFlashToast.show();
 
                     if (data.success) {
                         setTimeout(() => {
@@ -164,23 +210,68 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    const modal = bootstrap.Modal.getInstance(confirmModal);
-                    modal.hide();
+                    const bsToast = bootstrap.Toast.getInstance(toggleToast);
+                    bsToast.hide();
 
-                    const flashMessage = document.createElement('div');
-                    flashMessage.className = 'alert alert-danger flash-message';
-                    flashMessage.role = 'alert';
-                    flashMessage.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
-                    document.body.insertBefore(flashMessage, document.querySelector('.table-container'));
+                    // Tạo toast mới để hiển thị lỗi
+                    const flashToast = document.createElement('div');
+                    flashToast.className = 'toast';
+                    flashToast.role = 'alert';
+                    flashToast.setAttribute('aria-live', 'assertive');
+                    flashToast.setAttribute('aria-atomic', 'true');
+                    flashToast.setAttribute('data-bs-autohide', 'true');
+                    flashToast.setAttribute('data-bs-delay', '3000');
+
+                    const flashToastHeader = document.createElement('div');
+                    flashToastHeader.className = 'toast-header bg-danger text-white';
+                    flashToastHeader.innerHTML = `
+                    <strong class="me-auto">Thông báo</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                `;
+
+                    const flashToastBody = document.createElement('div');
+                    flashToastBody.className = 'toast-body';
+                    flashToastBody.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+
+                    flashToast.appendChild(flashToastHeader);
+                    flashToast.appendChild(flashToastBody);
+
+                    // Thêm toast vào container
+                    document.querySelector('.position-fixed.top-0.start-0').appendChild(flashToast);
+
+                    // Hiển thị toast
+                    const bsFlashToast = new bootstrap.Toast(flashToast);
+                    bsFlashToast.show();
                 });
         }
     });
 
-    // Đặt lại trạng thái modal khi đóng
-    confirmModal.addEventListener('hidden.bs.modal', function () {
-        modalBody.classList.remove('deactivate');
-        modalHeader.classList.remove('deactivate');
+    // Đặt lại trạng thái toast khi đóng
+    toggleToast.addEventListener('hidden.bs.toast', function () {
+        currentStaffId = null;
+        currentAction = null;
+        const toastHeader = toggleToast.querySelector('.toast-header');
+        const confirmBtn = toggleToast.querySelector('#confirmToastButton');
+        toastHeader.classList.remove('deactivate');
         confirmBtn.classList.remove('deactivate');
-        toggleForm = null;
+    });
+
+    // Xử lý bộ lọc: tự động gửi form khi thay đổi ô tìm kiếm hoặc trạng thái
+    const filterForm = document.getElementById('filterForm');
+    const searchInput = document.getElementById('search');
+    const statusSelect = document.getElementById('status');
+
+    // Gửi form khi thay đổi ô tìm kiếm (sau 500ms kể từ lần gõ cuối)
+    let searchTimeout;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            filterForm.submit();
+        }, 500);
+    });
+
+    // Gửi form ngay khi thay đổi trạng thái
+    statusSelect.addEventListener('change', function () {
+        filterForm.submit();
     });
 });

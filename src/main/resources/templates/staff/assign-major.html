@@ -2,61 +2,104 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Quản lý bộ môn / chuyên ngành</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* General styles */
+        /* General Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fc;
+            padding: 30px;
+            color: #2d3748;
         }
 
-        h1, h2, h3 {
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 8px;
+        h1 {
+            color: #1a202c;
             margin-bottom: 20px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: left;
         }
 
-        /* Info section */
-        .info-header {
-            display: flex;
-            align-items: center;
+        h3 {
+            color: #1a202c;
+            font-size: 1.25rem;
+            font-weight: 500;
             margin-bottom: 15px;
-        }
-
-        .info-header h3 {
-            margin: 0;
             display: flex;
             align-items: center;
         }
 
-        .info-icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            margin-right: 10px;
-            font-weight: bold;
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: flex-start;
+        }
+
+        .nav-links a, .nav-links button {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #4a90e2;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .nav-links a:hover, .nav-links button:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-links i {
+            font-size: 1.1rem;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Info Section */
+        .info-header i {
+            margin-right: 8px;
+            color: #4a90e2;
+            font-size: 1.2rem;
         }
 
         .info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
         }
 
@@ -65,46 +108,46 @@
         }
 
         .form-group label {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
         }
 
         .form-group input, .form-group select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: #f9fafb;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            color: #4a5568;
         }
 
-        /* List section */
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .form-group input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
         }
 
-        .list-icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            margin-right: 10px;
+        .form-group input:focus, .form-group select:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
         }
 
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+        /* Table Styling */
+        .table-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
+        .table-container:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
         table {
@@ -112,153 +155,304 @@
             border-collapse: collapse;
         }
 
-        table th, table td {
-            padding: 12px 15px;
+        th, td {
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #edf2f7;
         }
 
-        table th {
-            background-color: #f8f9fa;
-            color: #495057;
+        th {
+            background-color: #f7fafc;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
+        td {
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        tr {
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        /* Action Buttons */
         .action-buttons {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 8px;
         }
 
-        .icon-button {
-            background: none;
+        .action-btn {
+            padding: 6px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: none;
-            cursor: pointer;
-            font-size: 16px;
+            background-color: transparent;
         }
 
-        .edit-icon {
-            color: #007bff;
+        .action-btn:hover {
+            background-color: #edf2f7;
+            transform: translateY(-2px);
         }
 
-        .delete-icon {
-            color: #dc3545;
+        .action-btn i {
+            font-size: 1.2rem;
         }
 
+        .btn-delete i {
+            color: #f56565;
+        }
+
+        /* Note Styling */
         .note {
-            color: #dc3545;
+            color: #f56565;
             font-style: italic;
+            font-size: 0.9rem;
             margin-top: 20px;
             text-align: center;
         }
 
-        /* Modal styles */
-        .modal {
-            display: none;
+        /* Toast Container for Flash Messages */
+        .toast-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            top: 20px;
+            left: 20px;
+            z-index: 1050;
         }
 
+        .toast {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background-color: #ffffff;
+        }
+
+        .toast-header {
+            font-weight: 500;
+            border-bottom: none;
+        }
+
+        .toast-header.bg-danger {
+            background-color: #f56565 !important;
+            color: #ffffff;
+        }
+
+        .toast-body {
+            font-size: 0.95rem;
+            color: #2d3748;
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal Styling */
         .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            min-width: 400px;
-            max-width: 600px;
-            position: relative;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            cursor: pointer;
+        .modal-header {
+            background-color: #4a90e2;
+            color: #ffffff;
+            border-bottom: none;
+            padding: 16px 24px;
         }
 
         .modal-title {
-            margin-top: 0;
-            margin-bottom: 20px;
+            font-size: 1.25rem;
+            font-weight: 600;
         }
 
-        .modal .form-group {
-            margin-bottom: 15px;
+        .modal-body {
+            padding: 24px;
+            background-color: #ffffff;
         }
 
-        .modal .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .modal .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .form-label {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
         }
 
         .form-note {
-            font-size: 0.85em;
+            font-size: 0.85rem;
             color: #6c757d;
             margin-bottom: 20px;
         }
 
-        .btn-container {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .error-message {
-            color: #dc3545;
-            margin-top: 10px;
+        .form-control:focus, .form-select:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #4a90e2;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #a0aec0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #718096;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .nav-links a, .nav-links button {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .action-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .modal-body {
+                padding: 16px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Quản lý bộ môn / chuyên ngành</h1>
-    <a th:href="@{/staff}">Quay lại</a>
-    <!-- Staff Information Card -->
-    <div class="card">
-        <div class="info-header">
-            <h3><span class="info-icon">i</span> Thông tin nhân viên</h3>
-        </div>
+<h1>Quản lý bộ môn / chuyên ngành</h1>
 
-        <div class="info-grid">
-            <div class="form-group">
-                <label>Mã</label>
-                <input type="text" th:value="${staff.staffCode}" readonly />
-            </div>
-            <div class="form-group">
-                <label>Tên</label>
-                <input type="text" th:value="${staff.name}" readonly />
-            </div>
-            <div class="form-group">
-                <label>Email FPT</label>
-                <input type="text" th:value="${staff.accountFpt}" readonly />
-            </div>
-            <div class="form-group">
-                <label>Email FE</label>
-                <input type="text" th:value="${staff.accountFe}" readonly />
-            </div>
+<!-- Navigation Links -->
+<div class="nav-links">
+    <a th:href="@{/staff}">
+        <i class="bi bi-arrow-left"></i> Quay lại danh sách nhân viên
+    </a>
+</div>
+
+<!-- Toast Container for Flash Messages -->
+<div class="toast-container">
+    <div th:if="${error}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger">
+            <strong class="me-auto">Lỗi</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <span th:text="${error}"></span>
         </div>
     </div>
+</div>
 
-    <!-- Staff Major List Card -->
-    <div class="card">
-        <div class="list-header">
-            <h3><span class="list-icon">≡</span> Danh sách bộ môn, chuyên ngành theo cơ sở</h3>
-            <button id="addMajorBtn" class="btn btn-primary">Thêm bộ môn chuyên ngành</button>
+<!-- Staff Information Card -->
+<div class="card">
+    <div class="info-header">
+        <h3><i class="bi bi-info-circle"></i> Thông tin nhân viên</h3>
+    </div>
+
+    <div class="info-grid">
+        <div class="form-group">
+            <label>Mã nhân viên</label>
+            <input type="text" th:value="${staff.staffCode}" readonly />
         </div>
+        <div class="form-group">
+            <label>Tên nhân viên</label>
+            <input type="text" th:value="${staff.name}" readonly />
+        </div>
+        <div class="form-group">
+            <label>Email FPT</label>
+            <input type="text" th:value="${staff.accountFpt}" readonly />
+        </div>
+        <div class="form-group">
+            <label>Email FE</label>
+            <input type="text" th:value="${staff.accountFe}" readonly />
+        </div>
+    </div>
+</div>
 
+<!-- Staff Major List Card -->
+<div class="card">
+    <div class="nav-links">
+        <h3><i class="bi bi-list-ul"></i> Danh sách bộ môn, chuyên ngành theo cơ sở</h3>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#addMajorModal">
+            <i class="bi bi-plus-circle"></i> Thêm bộ môn chuyên ngành
+        </button>
+    </div>
+
+    <div class="table-container">
         <table>
             <thead>
             <tr>
@@ -277,94 +471,93 @@
                 <td th:text="${staffMajor.majorFacility.major.name}"></td>
                 <td class="action-buttons">
                     <form th:action="@{/staff/remove-major/{id}(id=${staffMajor.id})}" method="post" style="display:inline;">
-                        <button type="submit" class="icon-button delete-icon" title="Xóa">
-                            <span>🗑️</span>
+                        <button type="submit" class="action-btn btn-delete" title="Xóa">
+                            <i class="bi bi-trash"></i>
                         </button>
                     </form>
                 </td>
             </tr>
-            <!-- If no data, show a message -->
             <tr th:if="${staffMajorFacilities == null || staffMajorFacilities.isEmpty()}">
                 <td colspan="5" style="text-align: center;">Nhân viên này không có bộ môn chức vụ</td>
             </tr>
             </tbody>
         </table>
+    </div>
 
-        <div class="note">
-            *** Chú ý: Nhân viên chỉ có một bộ môn và một chuyên ngành trong một cơ sở ***
-        </div>
+    <div class="note">
+        *** Chú ý: Nhân viên chỉ có một bộ môn và một chuyên ngành trong một cơ sở ***
     </div>
 </div>
 
 <!-- Add Major Modal -->
-<div id="majorModal" class="modal">
-    <div class="modal-content">
-        <span class="close">×</span>
-        <h2 class="modal-title">Thêm bộ môn chuyên ngành</h2>
-
-        <form th:action="@{/staff/assign-major}" method="post">
-            <input type="hidden" name="staffId" th:value="${staff.id}"/>
-
-            <div class="form-group">
-                <label for="facilitySelect">Cơ sở:</label>
-                <select id="facilitySelect" name="facilityId" required onchange="loadDepartments()">
-                    <option value="">Chọn cơ sở</option>
-                    <option th:each="facility : ${facilities}" th:value="${facility.id}" th:text="${facility.name}"></option>
-                </select>
+<div class="modal fade" id="addMajorModal" tabindex="-1" aria-labelledby="addMajorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMajorModalLabel">Thêm bộ môn chuyên ngành</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body">
+                <form th:action="@{/staff/assign-major}" method="post">
+                    <input type="hidden" name="staffId" th:value="${staff.id}"/>
 
-            <div class="form-group">
-                <label for="departmentSelect">* Bộ môn:</label>
-                <select id="departmentSelect" name="departmentId" required onchange="loadMajors()">
-                    <option value="">Chọn bộ môn</option>
-                </select>
+                    <div class="mb-3">
+                        <label for="facilitySelect" class="form-label">Cơ sở:</label>
+                        <select id="facilitySelect" name="facilityId" class="form-select" required onchange="loadDepartments()">
+                            <option value="">Chọn cơ sở</option>
+                            <option th:each="facility : ${facilities}" th:value="${facility.id}" th:text="${facility.name}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="departmentSelect" class="form-label">* Bộ môn:</label>
+                        <select id="departmentSelect" name="departmentId" class="form-select" required onchange="loadMajors()">
+                            <option value="">Chọn bộ môn</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="majorSelect" class="form-label">* Chuyên ngành:</label>
+                        <select id="majorSelect" name="majorFacilityId" class="form-select" required>
+                            <option value="">Chọn chuyên ngành</option>
+                        </select>
+                    </div>
+
+                    <div class="form-note">
+                        <p>(* Điều bắt buộc không được bỏ qua)</p>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Đồng ý</button>
+                    </div>
+                </form>
             </div>
-
-            <div class="form-group">
-                <label for="majorSelect">* Chuyên ngành:</label>
-                <select id="majorSelect" name="majorFacilityId" required>
-                    <option value="">Chọn chuyên ngành</option>
-                </select>
-            </div>
-
-            <div class="form-note">
-                <p>(* Điều bắt buộc không được bỏ qua)</p>
-            </div>
-
-            <div class="error-message" th:if="${error}" th:text="${error}"></div>
-
-            <div class="btn-container">
-                <button type="submit" class="btn btn-primary">Đồng ý</button>
-                <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
-    // Modal control
-    const modal = document.getElementById("majorModal");
-    const addBtn = document.getElementById("addMajorBtn");
-    const closeBtn = document.querySelector(".close");
-    const cancelBtn = document.getElementById("cancelBtn");
+    document.addEventListener('DOMContentLoaded', function () {
+        // Hiển thị các toast ban đầu (nếu có)
+        var toastElements = document.querySelectorAll('.toast');
+        toastElements.forEach(function(toastEl) {
+            var toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 5000
+            });
+            toast.show();
+        });
 
-    addBtn.onclick = function() {
-        modal.style.display = "flex";
-    }
-
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    cancelBtn.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
+        // Hiển thị modal nếu có lỗi sau khi gửi form
+        var errorElement = document.querySelector('.error-message');
+        if (errorElement && errorElement.textContent.trim() !== '') {
+            var modal = new bootstrap.Modal(document.getElementById('addMajorModal'));
+            modal.show();
         }
-    }
+    });
 
     // Load departments based on selected facility
     function loadDepartments() {
@@ -415,14 +608,6 @@
             })
             .catch(error => console.error('Error loading majors:', error));
     }
-
-    // Show modal if there was an error during submission
-    document.addEventListener('DOMContentLoaded', function() {
-        const errorElement = document.querySelector('.error-message');
-        if (errorElement && errorElement.textContent.trim() !== '') {
-            modal.style.display = "flex";
-        }
-    });
 </script>
 </body>
 </html>

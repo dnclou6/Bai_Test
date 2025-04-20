@@ -2,33 +2,327 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Import nhân viên</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fc;
+            padding: 30px;
+            color: #2d3748;
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        h2 {
+            color: #1a202c;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: flex-start;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #4a90e2;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links a:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-links i {
+            font-size: 1.1rem;
+        }
+
+        /* Form Styling */
+        .import-form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .import-form:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .import-form label {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .import-form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: #f9fafb;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .import-form input[type="file"]:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            outline: none;
+        }
+
+        .import-form button {
+            background-color: #4a90e2;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .import-form button:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Table Styling */
+        .table-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .table-container:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            background-color: #f7fafc;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        tr {
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        /* Toast Container for Flash Messages */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1050;
+        }
+
+        .toast {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background-color: #ffffff;
+        }
+
+        .toast-header {
+            font-weight: 500;
+            border-bottom: none;
+        }
+
+        .toast-header.bg-danger {
+            background-color: #f56565 !important;
+            color: #ffffff;
+        }
+
+        .toast-body {
+            font-size: 0.95rem;
+            color: #2d3748;
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .import-form {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
 <h1>Import nhân viên</h1>
-<a th:href="@{/staff}">Quay lại</a>
 
-<form th:action="@{/staff/import}" method="post" enctype="multipart/form-data">
-    <label>Chọn file Excel:</label>
-    <input type="file" name="file" accept=".xlsx"/>
+<!-- Navigation Links -->
+<div class="nav-links">
+    <a th:href="@{/staff}">
+        <i class="bi bi-arrow-left"></i> Quay lại danh sách nhân viên
+    </a>
+</div>
 
-    <button type="submit">Import</button>
-</form>
+<!-- Toast Container for Flash Messages -->
+<div class="toast-container">
+    <div th:if="${error}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger">
+            <strong class="me-auto">Lỗi</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <span th:text="${error}"></span>
+        </div>
+    </div>
+</div>
 
+<!-- Import Form -->
+<div class="import-form">
+    <form th:action="@{/staff/import}" method="post" enctype="multipart/form-data">
+        <label for="fileInput">Chọn file Excel (.xlsx):</label>
+        <input type="file" id="fileInput" name="file" accept=".xlsx" required/>
+        <button type="submit">Import</button>
+    </form>
+</div>
+
+<!-- Import Results -->
 <h2>Kết quả import</h2>
-<table th:if="${results}">
-    <tr>
-        <th>Dòng</th>
-        <th>Trạng thái</th>
-        <th>Thông báo</th>
-    </tr>
-    <tr th:each="result : ${results}">
-        <td th:text="${result.rowNumber}"></td>
-        <td th:text="${result.success ? 'Thành công' : 'Thất bại'}"></td>
-        <td th:text="${result.message}"></td>
-    </tr>
-</table>
+<div class="table-container" th:if="${results}">
+    <table>
+        <thead>
+        <tr>
+            <th>Dòng</th>
+            <th>Trạng thái</th>
+            <th>Thông báo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result : ${results}">
+            <td th:text="${result.rowNumber}"></td>
+            <td th:text="${result.success ? 'Thành công' : 'Thất bại'}"></td>
+            <td th:text="${result.message}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
-<div class="error" th:if="${error}">${error}</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Hiển thị các toast ban đầu (nếu có)
+        var toastElements = document.querySelectorAll('.toast');
+        toastElements.forEach(function(toastEl) {
+            var toast = new bootstrap.Toast(toastEl, {
+                autohide: true,
+                delay: 5000
+            });
+            toast.show();
+        });
+    });
+</script>
 </body>
 </html>
