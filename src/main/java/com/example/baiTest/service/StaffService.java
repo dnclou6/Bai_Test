@@ -81,8 +81,8 @@ public class StaffService {
         }
 
 
-        if (!staffDTO.getAccountFe().contains(staffDTO.getStaffCode()) ||
-                !staffDTO.getAccountFpt().contains(staffDTO.getStaffCode())) {
+        if (!staffDTO.getAccountFe().toLowerCase().contains(staffDTO.getStaffCode().toLowerCase()) ||
+                !staffDTO.getAccountFpt().toLowerCase().contains(staffDTO.getStaffCode().toLowerCase())) {
             throw new IllegalArgumentException("Email phải chứa mã nhân viên");
         }
 
@@ -123,8 +123,8 @@ public class StaffService {
             throw new IllegalArgumentException("Mã nhân viên đã tồn tại");
         }
 
-        if (!staffDTO.getAccountFe().contains(staffDTO.getStaffCode()) ||
-                !staffDTO.getAccountFpt().contains(staffDTO.getStaffCode())) {
+        if (!staffDTO.getAccountFe().toLowerCase().contains(staffDTO.getStaffCode().toLowerCase()) ||
+                !staffDTO.getAccountFpt().toLowerCase().contains(staffDTO.getStaffCode().toLowerCase())) {
             throw new IllegalArgumentException("Email phải chứa mã nhân viên");
         }
 
@@ -297,7 +297,7 @@ public class StaffService {
             row1.createCell(2).setCellValue("Nguyen Van A");
             row1.createCell(3).setCellValue("STAFF001");
             row1.createCell(4).setCellValue("HN");
-            row1.createCell(5).setCellValue("Department 1");
+            row1.createCell(5).setCellValue("Department One");
             row1.createCell(6).setCellValue("Major One");
 
             // Tùy chỉnh kích thước cột (tùy chọn)
